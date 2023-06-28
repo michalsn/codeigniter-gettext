@@ -10,14 +10,11 @@ class Gettext
 {
     protected string $defaultLocale;
     protected array $supportedLocales;
-    protected GettextConfig $config;
 
-    public function __construct(GettextConfig $gettext, AppConfig $app)
+    public function __construct(protected GettextConfig $config, AppConfig $app)
     {
         $this->defaultLocale    = $app->defaultLocale;
         $this->supportedLocales = $app->supportedLocales;
-
-        $this->config = $gettext;
     }
 
     public function setLocale(string $locale)
