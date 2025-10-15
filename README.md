@@ -1,6 +1,6 @@
 # CodeIgniter Gettext
 
-This library gives users the ability to use [gettext](https://www.php.net/manual/en/book.gettext.php) more friendly way.
+This library gives users the ability to use [gettext](https://www.php.net/manual/en/book.gettext.php) in a friendlier way.
 
 [![PHPUnit](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpunit.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpstan.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpstan.yml)
@@ -9,7 +9,13 @@ This library gives users the ability to use [gettext](https://www.php.net/manual
 ![PHP](https://img.shields.io/badge/PHP-%5E8.0-blue)
 ![CodeIgniter](https://img.shields.io/badge/CodeIgniter-%5E4.3-blue)
 
-### Installation
+## Requirements
+
+- PHP 8.0 or higher
+- CodeIgniter 4.3 or higher
+- PHP gettext extension enabled
+
+## Installation
 
 #### Composer
 
@@ -40,12 +46,207 @@ class Autoload extends AutoloadConfig
     // ...
 ```
 
-### Example
+## Configuration
+
+Run the publish command to create the configuration file:
+
+```bash
+php spark gettext:publish
+```
+
+This will create a `Gettext.php` config file in the `app/Config/` folder with the following options:
+
+### Config Options
 
 ```php
+<?php
 
-service('gettext')->setLocale('pl');
+namespace Config;
 
-echo _('Hello');
+use Michalsn\CodeIgniterGettext\Config\Gettext as BaseGettext;
+
+class Gettext extends BaseGettext
+{
+    // Directory where translation files are stored
+    public string $dir = APPPATH . 'Gettext' . DIRECTORY_SEPARATOR;
+
+    // Default domain name (usually 'messages')
+    public string $domain = 'messages';
+
+    // List of allowed domains
+    public array $allowedDomains = ['messages'];
+
+    // Character encoding
+    public string $codeset = 'UTF-8';
+
+    // Locale mapping - maps CodeIgniter locales to system locales
+    public array $locales = [
+        'en' => 'en_US.utf8',
+        'pl' => 'pl_PL.utf8',
+        'de' => 'de_DE.utf8',
+        'fr' => 'fr_FR.utf8',
+    ];
+}
+```
+
+### Important: Configure Supported Locales
+
+You also need to configure supported locales in `app/Config/App.php`:
+
+```php
+public array $supportedLocales = ['en', 'pl', 'de', 'fr'];
+```
+
+### Folder structure
+
+This is how your folder structure should look like.
 
 ```
+app/
+├── Gettext/                  # Base directory for all gettext locales
+│   ├── pl_PL/                # Polish locale
+│   │   └── LC_MESSAGES/
+│   │       ├── messages.po   # Editable source file
+│   │       └── messages.mo   # Compiled binary file for PHP
+│   │
+│   └── de_DE/                # Example: German locale
+│       └── LC_MESSAGES/
+│           ├── messages.po
+│           └── messages.mo
+│
+├── Controllers/
+│   └── Home.php
+├── Views/
+│   └── welcome_message.php
+└── ...
+```
+
+
+## Usage
+
+### Basic Example
+
+```php
+// In your controller
+service('gettext')->setLocale('pl');
+
+echo _('Hello');  // Outputs: Cześć
+```
+
+### Using with Different Locales
+
+```php
+// Set locale based on user preference
+service('gettext')->setLocale('de');
+
+echo _('Hello');  // Outputs: Hallo
+echo _('Goodbye');  // Outputs: Auf Wiedersehen
+```
+
+### Setting Locale and Domain
+
+```php
+// If you need to change both locale and domain
+service('gettext')->setLocale('pl')->setDomain('messages');
+
+echo _('Hello');
+```
+
+### Using Multiple Domains
+
+If you want to organize translations into different domains (e.g., 'messages', 'errors', 'emails'):
+
+1. Update `app/Config/Gettext.php`:
+```php
+public array $allowedDomains = ['messages', 'errors', 'emails'];
+```
+
+2. Create corresponding `.po` and `.mo` files:
+```
+app/Gettext/pl_PL/LC_MESSAGES/
+├── messages.po
+├── messages.mo
+├── errors.po
+├── errors.mo
+├── emails.po
+└── emails.mo
+```
+
+3. Switch domains as needed:
+```php
+service('gettext')->setLocale('pl')->setDomain('errors');
+echo _('File not found');
+```
+
+## Translation Workflow
+
+### 1. Create Translation Files
+
+Create a `.po` (Portable Object) file for each locale in the appropriate directory:
+
+```
+app/Gettext/pl_PL/LC_MESSAGES/messages.po
+```
+
+### 2. Edit `.po` Files
+
+You can edit `.po` files manually or use tools like Poedit, which provides a user-friendly interface.
+
+Example `.po` file structure:
+
+```po
+msgid ""
+msgstr ""
+"Project-Id-Version: MyApp 1.0\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hello"
+msgstr "Cześć"
+
+msgid "Goodbye"
+msgstr "Do widzenia"
+```
+
+### 3. Compile to `.mo` Files
+
+After editing `.po` files, compile them to binary `.mo` (Machine Object) files for PHP to use.
+
+#### Using msgfmt (Command Line)
+```bash
+msgfmt app/Gettext/pl_PL/LC_MESSAGES/messages.po -o app/Gettext/pl_PL/LC_MESSAGES/messages.mo
+```
+
+#### Compile All Locales at Once
+```bash
+find app/Gettext -name "*.po" -execdir msgfmt {} -o messages.mo \;
+```
+
+### 4. Restart Your Application
+
+After compiling new translations, you may need to restart your web server or PHP-FPM to clear the gettext cache.
+
+## Troubleshooting
+
+### Translations Not Working
+
+1. **Check if gettext extension is installed:**
+   ```bash
+   php -m | grep gettext
+   ```
+
+2. **Verify locale is installed on your system:**
+   ```bash
+   locale -a | grep pl_PL
+   ```
+   If not found, install the locale package for your OS.
+
+3. **Check locale format:** Ensure your locale strings in `app/Config/Gettext.php` match your system's locale format. Common formats:
+    - Linux: `pl_PL.utf8` or `pl_PL.UTF-8`
+    - macOS: `pl_PL.UTF-8`
+
+4. **Verify .mo files exist and are up-to-date:** Ensure you've compiled `.po` files to `.mo` files after making changes.
+
+5. **Clear gettext cache:** Restart your web server or PHP-FPM after updating translations.

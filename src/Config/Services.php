@@ -13,7 +13,7 @@ class Services extends BaseService
      *
      * @return Gettext
      */
-    public static function gettext(?string $locale, ?string $domain, ?GettextConfig $gettext, bool $getShared = true)
+    public static function gettext(?string $locale = null, ?string $domain = null, ?GettextConfig $gettext = null, bool $getShared = true)
     {
         if ($getShared) {
             return static::getSharedInstance('gettext', $locale, $domain, $gettext);
