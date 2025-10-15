@@ -12,7 +12,7 @@ use Michalsn\CodeIgniterGettext\Gettext;
  */
 final class GettextTest extends CIUnitTestCase
 {
-    protected Gettext $gt;
+    private Gettext $gt;
 
     protected function setUp(): void
     {
