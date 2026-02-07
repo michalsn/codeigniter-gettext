@@ -59,8 +59,6 @@ class Gettext
         $contextString = $msgctxt . "\x04" . $msgid;
         $translation   = gettext($contextString);
 
-        // If no translation found, gettext returns the input string
-        // In that case, return just the msgid
         return ($translation === $contextString) ? $msgid : $translation;
     }
 
@@ -80,8 +78,6 @@ class Gettext
         $contextStringPlural = $msgctxt . "\x04" . $msgidPlural;
         $translation         = ngettext($contextString, $contextStringPlural, $n);
 
-        // If no translation found, ngettext returns one of the input strings
-        // In that case, return the appropriate form without context
         if ($translation === $contextString || $translation === $contextStringPlural) {
             return ($n === 1) ? $msgid : $msgidPlural;
         }
@@ -103,8 +99,6 @@ class Gettext
         $contextString = $msgctxt . "\x04" . $msgid;
         $translation   = dgettext($domain, $contextString);
 
-        // If no translation found, dgettext returns the input string
-        // In that case, return just the msgid
         return ($translation === $contextString) ? $msgid : $translation;
     }
 
@@ -125,8 +119,6 @@ class Gettext
         $contextStringPlural = $msgctxt . "\x04" . $msgidPlural;
         $translation         = dngettext($domain, $contextString, $contextStringPlural, $n);
 
-        // If no translation found, dngettext returns one of the input strings
-        // In that case, return the appropriate form without context
         if ($translation === $contextString || $translation === $contextStringPlural) {
             return ($n === 1) ? $msgid : $msgidPlural;
         }
