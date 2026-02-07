@@ -143,6 +143,15 @@ echo _('Hello');  // Outputs: Hallo
 echo _('Goodbye');  // Outputs: Auf Wiedersehen
 ```
 
+### Using with context
+
+```php
+service('gettext')->setLocale('de');
+
+echo pgettext('verb', 'Post');      // "Veröffentlichen"
+echo pgettext('noun', 'Post');      // "Beitrag"
+```
+
 ### Setting Locale and Domain
 
 ```php
