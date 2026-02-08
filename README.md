@@ -5,6 +5,7 @@ This library gives users the ability to use [gettext](https://www.php.net/manual
 [![PHPUnit](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpunit.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpstan.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpstan.yml)
 [![Deptrac](https://github.com/michalsn/codeigniter-gettext/actions/workflows/deptrac.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/deptrac.yml)
+[![Coverage Status](https://coveralls.io/repos/github/michalsn/codeigniter-gettext/badge.svg?branch=develop)](https://coveralls.io/github/michalsn/codeigniter-gettext?branch=develop)
 
 ![PHP](https://img.shields.io/badge/PHP-%5E8.2-blue)
 ![CodeIgniter](https://img.shields.io/badge/CodeIgniter-%5E4.3-blue)
