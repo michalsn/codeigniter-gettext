@@ -28,8 +28,8 @@ final class GettextTest extends CIUnitTestCase
         $this->gtConfig->domain = 'messages';
         $this->gtConfig->allowedDomains = ['messages', 'other'];
         $this->gtConfig->locales = [
-            'en' => 'en_US',
-            'pl' => 'pl_PL',
+            'en' => 'en_US.utf8',
+            'pl' => 'pl_PL.utf8',
         ];
 
         $this->appConfig = config(App::class);
@@ -42,7 +42,7 @@ final class GettextTest extends CIUnitTestCase
     public function testSetLocale(): void
     {
         $this->gt->setLocale('pl');
-        $this->assertSame('pl_PL', getenv('LC_ALL'));
+        $this->assertSame('pl_PL.utf8', getenv('LC_ALL'));
     }
 
     public function testSetLocaleUnsupported(): void
