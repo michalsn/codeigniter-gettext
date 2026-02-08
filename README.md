@@ -6,12 +6,12 @@ This library gives users the ability to use [gettext](https://www.php.net/manual
 [![PHPStan](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpstan.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/phpstan.yml)
 [![Deptrac](https://github.com/michalsn/codeigniter-gettext/actions/workflows/deptrac.yml/badge.svg)](https://github.com/michalsn/codeigniter-gettext/actions/workflows/deptrac.yml)
 
-![PHP](https://img.shields.io/badge/PHP-%5E8.0-blue)
+![PHP](https://img.shields.io/badge/PHP-%5E8.2-blue)
 ![CodeIgniter](https://img.shields.io/badge/CodeIgniter-%5E4.3-blue)
 
 ## Requirements
 
-- PHP 8.0 or higher
+- PHP 8.2 or higher
 - CodeIgniter 4.3 or higher
 - PHP gettext extension enabled
 
