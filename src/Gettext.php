@@ -35,7 +35,7 @@ class Gettext
             throw GettextException::forDirDoesNotExist();
         }
 
-        if (! in_array($domain, $this->config->allowedDomains, true)) {
+        if (! $this->verifyDomain($domain)) {
             throw GettextException::forDomainNotSupported();
         }
 
@@ -44,5 +44,105 @@ class Gettext
         bind_textdomain_codeset($domain, $this->config->codeset);
 
         return $this;
+    }
+
+    /**
+     * Context-aware gettext
+     *
+     * @param string $msgctxt The message context
+     * @param string $msgid   The message identifier
+     *
+     * @return string The translated string
+     */
+    public function pgettext(string $msgctxt, string $msgid): string
+    {
+        $contextString = $msgctxt . "\x04" . $msgid;
+        $translation   = gettext($contextString);
+
+        return ($translation === $contextString) ? $msgid : $translation;
+    }
+
+    /**
+     * Context-aware ngettext (plural)
+     *
+     * @param string $msgctxt     The message context
+     * @param string $msgid       The singular message identifier
+     * @param string $msgidPlural The plural message identifier
+     * @param int    $n           The number for determining plural form
+     *
+     * @return string The translated string
+     */
+    public function npgettext(string $msgctxt, string $msgid, string $msgidPlural, int $n): string
+    {
+        $contextString       = $msgctxt . "\x04" . $msgid;
+        $contextStringPlural = $msgctxt . "\x04" . $msgidPlural;
+        $translation         = ngettext($contextString, $contextStringPlural, $n);
+
+        if ($translation === $contextString || $translation === $contextStringPlural) {
+            return ($n === 1) ? $msgid : $msgidPlural;
+        }
+
+        return $translation;
+    }
+
+    /**
+     * Context-aware dgettext (with domain)
+     *
+     * @param string $domain  The text domain
+     * @param string $msgctxt The message context
+     * @param string $msgid   The message identifier
+     *
+     * @return string The translated string
+     */
+    public function dpgettext(string $domain, string $msgctxt, string $msgid): string
+    {
+        if (! $this->verifyDomain($domain)) {
+            throw GettextException::forDomainNotSupported();
+        }
+
+        $contextString = $msgctxt . "\x04" . $msgid;
+        $translation   = dgettext($domain, $contextString);
+
+        return ($translation === $contextString) ? $msgid : $translation;
+    }
+
+    /**
+     * Context-aware dngettext (with domain and plural)
+     *
+     * @param string $domain      The text domain
+     * @param string $msgctxt     The message context
+     * @param string $msgid       The singular message identifier
+     * @param string $msgidPlural The plural message identifier
+     * @param int    $n           The number for determining plural form
+     *
+     * @return string The translated string
+     */
+    public function dnpgettext(string $domain, string $msgctxt, string $msgid, string $msgidPlural, int $n): string
+    {
+        if (! $this->verifyDomain($domain)) {
+            throw GettextException::forDomainNotSupported();
+        }
+
+        $contextString       = $msgctxt . "\x04" . $msgid;
+        $contextStringPlural = $msgctxt . "\x04" . $msgidPlural;
+        $translation         = dngettext($domain, $contextString, $contextStringPlural, $n);
+
+        if ($translation === $contextString || $translation === $contextStringPlural) {
+            return ($n === 1) ? $msgid : $msgidPlural;
+        }
+
+        return $translation;
+    }
+
+    /**
+     * Verify if the domain is allowed
+     *
+     * @param string $domain The text domain to verify
+     *
+     * @return bool True if the domain is allowed, false otherwise
+     */
+    private function verifyDomain(string $domain): bool
+    {
+        return in_array($domain, $this->config->allowedDomains, true);
     }
 }
