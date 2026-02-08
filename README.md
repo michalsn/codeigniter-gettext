@@ -152,6 +152,45 @@ echo pgettext('verb', 'Post');      // "Veröffentlichen"
 echo pgettext('noun', 'Post');      // "Beitrag"
 ```
 
+### Handling plural forms with context
+
+```php
+// npgettext($context, $singular, $plural, $count)
+
+$count = 3;
+// Insert values with sprintf()
+echo sprintf(npgettext('email', '%d message', '%d messages', intval($count)), $count);
+// Email context: "3 messages"
+
+echo sprintf(npgettext('chat', '%d message', '%d messages', intval($count)), $count);
+// Chat context: "3 chats" or "3 texts"
+
+```
+
+### Translates with both domain and context
+
+```php
+// dpgettext($domain, $context, $message)
+
+// Using different translation domains
+echo dpgettext('admin', 'button', 'Delete');    // "Remove permanently"
+echo dpgettext('frontend', 'button', 'Delete'); // "Move to trash"
+```
+
+### Combines domain, context, and plural handling.
+
+```php
+// dnpgettext($domain, $context, $singular, $plural, $count)
+
+$files = 5;
+// Insert values with sprintf()
+echo sprintf(dnpgettext('filesystem', 'trash', '%d file', '%d files', intval($files)), $files);
+// Result: "5 files in trash"
+
+echo sprintf(dnpgettext('filesystem', 'upload', '%d file', '%d files', intval($files)), $files);
+// Result: "5 files uploaded"
+```
+
 ### Setting Locale and Domain
 
 ```php
