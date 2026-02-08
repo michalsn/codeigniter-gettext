@@ -23,8 +23,11 @@ class Gettext
             throw GettextException::forLocaleNotSupported();
         }
 
-        putenv('LC_ALL=' . ($this->config->locales[$locale] ?? $this->defaultLocale));
-        setlocale(LC_ALL, $this->config->locales[$locale] ?? $this->defaultLocale);
+        $localeValue = $this->config->locales[$locale] ?? $this->defaultLocale;
+
+        putenv('LC_ALL=' . $localeValue);
+        putenv('LANGUAGE=' . $localeValue);
+        setlocale(LC_ALL, $localeValue);
 
         return $this;
     }
@@ -35,13 +38,8 @@ class Gettext
             throw GettextException::forDirDoesNotExist();
         }
 
-        if (! $this->verifyDomain($domain)) {
-            throw GettextException::forDomainNotSupported();
-        }
-
-        bindtextdomain($domain, $this->config->dir);
+        $this->verifyDomain($domain);
         textdomain($domain);
-        bind_textdomain_codeset($domain, $this->config->codeset);
 
         return $this;
     }
@@ -96,9 +94,7 @@ class Gettext
      */
     public function dpgettext(string $domain, string $msgctxt, string $msgid): string
     {
-        if (! $this->verifyDomain($domain)) {
-            throw GettextException::forDomainNotSupported();
-        }
+        $this->verifyDomain($domain);
 
         $contextString = $msgctxt . "\x04" . $msgid;
         $translation   = dgettext($domain, $contextString);
@@ -119,9 +115,7 @@ class Gettext
      */
     public function dnpgettext(string $domain, string $msgctxt, string $msgid, string $msgidPlural, int $n): string
     {
-        if (! $this->verifyDomain($domain)) {
-            throw GettextException::forDomainNotSupported();
-        }
+        $this->verifyDomain($domain);
 
         $contextString       = $msgctxt . "\x04" . $msgid;
         $contextStringPlural = $msgctxt . "\x04" . $msgidPlural;
@@ -139,10 +133,15 @@ class Gettext
      *
      * @param string $domain The text domain to verify
      *
-     * @return bool True if the domain is allowed, false otherwise
+     * @throws GettextException
      */
-    private function verifyDomain(string $domain): bool
+    private function verifyDomain(string $domain): void
     {
-        return in_array($domain, $this->config->allowedDomains, true);
+        if (! in_array($domain, $this->config->allowedDomains, true)) {
+            throw GettextException::forDomainNotSupported();
+        }
+
+        bindtextdomain($domain, $this->config->dir);
+        bind_textdomain_codeset($domain, $this->config->codeset);
     }
 }
