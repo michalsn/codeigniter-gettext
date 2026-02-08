@@ -35,7 +35,7 @@ class Gettext
             throw GettextException::forDirDoesNotExist();
         }
 
-        if (! in_array($domain, $this->config->allowedDomains, true)) {
+        if (! $this->verifyDomain($domain)) {
             throw GettextException::forDomainNotSupported();
         }
 
@@ -96,6 +96,10 @@ class Gettext
      */
     public function dpgettext(string $domain, string $msgctxt, string $msgid): string
     {
+        if (! $this->verifyDomain($domain)) {
+            throw GettextException::forDomainNotSupported();
+        }
+
         $contextString = $msgctxt . "\x04" . $msgid;
         $translation   = dgettext($domain, $contextString);
 
@@ -115,6 +119,10 @@ class Gettext
      */
     public function dnpgettext(string $domain, string $msgctxt, string $msgid, string $msgidPlural, int $n): string
     {
+        if (! $this->verifyDomain($domain)) {
+            throw GettextException::forDomainNotSupported();
+        }
+
         $contextString       = $msgctxt . "\x04" . $msgid;
         $contextStringPlural = $msgctxt . "\x04" . $msgidPlural;
         $translation         = dngettext($domain, $contextString, $contextStringPlural, $n);
@@ -124,5 +132,17 @@ class Gettext
         }
 
         return $translation;
+    }
+
+    /**
+     * Verify if the domain is allowed
+     *
+     * @param string $domain The text domain to verify
+     *
+     * @return bool True if the domain is allowed, false otherwise
+     */
+    private function verifyDomain(string $domain): bool
+    {
+        return in_array($domain, $this->config->allowedDomains, true);
     }
 }
