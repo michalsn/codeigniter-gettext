@@ -36,11 +36,14 @@ class GettextPublish extends BaseCommand
         }
 
         foreach ($publisher->getPublished() as $file) {
-            $contents = file_get_contents($file);
-            $contents = str_replace('namespace Michalsn\\CodeIgniterGettext\\Config', 'namespace Config', $contents);
-            $contents = str_replace('use CodeIgniter\\Config\\BaseConfig', 'use Michalsn\\CodeIgniterGettext\\Config\\Gettext as BaseGettext', $contents);
-            $contents = str_replace('class Gettext extends BaseConfig', 'class Gettext extends BaseGettext', $contents);
-            file_put_contents($file, $contents);
+            $publisher->replace(
+                $file,
+                [
+                    'namespace Michalsn\\CodeIgniterGettext\\Config' => 'namespace Config',
+                    'use CodeIgniter\\Config\\BaseConfig'            => 'use Michalsn\\CodeIgniterGettext\\Config\\Gettext as BaseGettext',
+                    'class Gettext extends BaseConfig'               => 'class Gettext extends BaseGettext',
+                ],
+            );
         }
 
         CLI::write(CLI::color('  Published! ', 'green') . 'You can customize the configuration by editing the "app/Config/Gettext.php" file.');

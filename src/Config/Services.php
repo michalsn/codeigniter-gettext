@@ -19,8 +19,8 @@ class Services extends BaseService
             return static::getSharedInstance('gettext', $locale, $domain, $gettext);
         }
 
-        $gettext = config('Gettext');
-        $app     = config('App');
+        $app = config('App');
+        $gettext ??= config('Gettext');
         $locale ??= $app->defaultLocale;
         $domain ??= $gettext->domain;
 
